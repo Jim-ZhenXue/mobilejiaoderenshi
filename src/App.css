@@ -1,0 +1,29 @@
+.app-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.angle-display {
+  font-size: 24px;
+  margin: 20px 0;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  transform: scale(1.05);
+}
