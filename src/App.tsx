@@ -25,7 +25,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 p-5">
+    <div className="min-h-screen bg-black p-5">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-5">
         <h1 className="text-2xl font-bold text-center mb-4">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 animate-gradient">
