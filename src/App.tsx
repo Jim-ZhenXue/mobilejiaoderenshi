@@ -27,20 +27,6 @@ function App() {
   return (
     <div className="min-h-screen bg-black p-5 flex items-center">
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
-        <button
-          onClick={() => {
-            // @ts-ignore
-            if (window.wx && window.wx.miniProgram) {
-              // @ts-ignore
-              window.wx.miniProgram.switchTab({
-                url: '/pages/index/index'
-              });
-            }
-          }}
-          className="absolute top-4 left-4 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
-        >
-          返回小程序
-        </button>
         <div className="flex justify-center gap-12 items-start translate-x-[25px]">
           <div className="w-[600px]">
             <h1 className="text-2xl font-bold text-center mb-8">
