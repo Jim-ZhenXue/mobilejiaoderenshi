@@ -32,7 +32,9 @@ function App() {
             // @ts-ignore
             if (window.wx && window.wx.miniProgram) {
               // @ts-ignore
-              window.wx.miniProgram.navigateBack();
+              window.wx.miniProgram.switchTab({
+                url: '/pages/index/index'
+              });
             }
           }}
           className="absolute top-4 left-4 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
