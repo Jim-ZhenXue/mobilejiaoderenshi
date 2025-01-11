@@ -18,7 +18,7 @@ export const levels: Level[] = [
   },
   {
     targetAngle: 180,
-    instruction: "这次要做一个平角，两条边要成一条直线!"
+    instruction: "这次要做一个平角，两条边要成一条直线"
   },
   {
     targetAngle: 270,
