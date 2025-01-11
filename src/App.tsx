@@ -27,7 +27,7 @@ function App() {
   return (
     <div className="min-h-screen bg-black p-5 flex items-center">
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
-        <div className="flex justify-center gap-12 items-start">
+        <div className="flex justify-center gap-12 items-start translate-x-[25px]">
           <div className="w-[600px]">
             <h1 className="text-2xl font-bold text-center mb-8">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 animate-gradient">
