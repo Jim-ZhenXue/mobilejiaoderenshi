@@ -25,39 +25,41 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-black p-5">
-      <div className="max-w-7xl mx-auto rounded-xl p-5 flex gap-8">
-        <div className="w-1/3 flex flex-col">
-          <h1 className="text-2xl font-bold text-center mb-8">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 animate-gradient">
-              转转乐
-            </span>
-            <span className="text-purple-600">角度探险</span>
-          </h1>
-          
-          <div className="mb-6">
-            <Instructions level={levels[currentLevel]} />
+    <div className="min-h-screen bg-black p-5 flex items-center">
+      <div className="w-full max-w-6xl mx-auto rounded-xl p-5">
+        <div className="flex gap-8 items-start">
+          <div className="flex-1 max-w-md">
+            <h1 className="text-2xl font-bold text-center mb-8">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 animate-gradient">
+                转转乐
+              </span>
+              <span className="text-purple-600">角度探险</span>
+            </h1>
+            
+            <div className="mb-6">
+              <Instructions level={levels[currentLevel]} />
+            </div>
+
+            <div className="mt-auto">
+              <Controls 
+                angle={angle}
+                onAngleChange={handleAngleChange}
+                onNextLevel={nextLevel}
+                isCorrect={isCorrect}
+                score={score}
+                level={currentLevel + 1}
+              />
+            </div>
           </div>
 
-          <div className="mt-auto">
-            <Controls 
+          <div className="flex-1 flex items-center justify-center">
+            <GameCanvas 
               angle={angle}
-              onAngleChange={handleAngleChange}
-              onNextLevel={nextLevel}
+              targetAngle={levels[currentLevel].targetAngle}
               isCorrect={isCorrect}
-              score={score}
-              level={currentLevel + 1}
+              onDragMove={handleAngleChange}
             />
           </div>
-        </div>
-
-        <div className="w-2/3 flex items-center justify-center">
-          <GameCanvas 
-            angle={angle}
-            targetAngle={levels[currentLevel].targetAngle}
-            isCorrect={isCorrect}
-            onDragMove={handleAngleChange}
-          />
         </div>
       </div>
 
