@@ -10,7 +10,7 @@ export const levels: Level[] = [
   },
   {
     targetAngle: 45,
-    instruction: "现在来尝试制作一个45度角，这是直角的一半哦！"
+    instruction: "现在来尝试制作45度角，这是直角的一半哦！"
   },
   {
     targetAngle: 145,
@@ -26,6 +26,6 @@ export const levels: Level[] = [
   },
   {
     targetAngle: 360,
-    instruction: "最后的挑战：转一整圈，做一个360度的周角！"
+    instruction: "最后的挑战：转一整圈，作出360度的周角！"
   }
 ];
