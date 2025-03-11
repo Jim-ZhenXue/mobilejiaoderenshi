@@ -3,9 +3,11 @@ import { Instructions } from './components/Instructions';
 import { Controls } from './components/Controls';
 import { Celebration } from './components/Celebration';
 import { FinalScore } from './components/FinalScore';
+import { SoundButton } from './components/SoundButton';
 import { levels } from './data/levels';
 import { useAngleGame } from './hooks/useAngleGame';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import soundManager from './utils/soundManager';
 
 function App() {
   const {
@@ -20,6 +22,32 @@ function App() {
 
   const [showFinalScore, setShowFinalScore] = useState(false);
 
+  // Play sounds based on game state changes
+  useEffect(() => {
+    if (isCorrect) {
+      soundManager.play('correct');
+    }
+  }, [isCorrect]);
+
+  useEffect(() => {
+    if (isGameComplete) {
+      soundManager.play('gameComplete');
+    }
+  }, [isGameComplete]);
+
+  const handleNextLevel = () => {
+    soundManager.play('levelComplete');
+    nextLevel();
+  };
+
+  const handleAngleChangeWithSound = (newAngle: number) => {
+    // Only play rotate sound occasionally to avoid too many sounds
+    if (Math.abs(newAngle - angle) > 10) {
+      soundManager.play('rotate');
+    }
+    handleAngleChange(newAngle);
+  };
+
   if (showFinalScore) {
     return <FinalScore />;
   }
@@ -27,6 +55,7 @@ function App() {
   return (
     <div className="min-h-screen bg-black p-5 flex items-center">
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
+        <SoundButton />
         <div className="flex justify-center gap-12 items-start translate-x-[25px]">
           <div className="w-[600px]">
             <h1 className="text-2xl font-bold text-center mb-8">
@@ -43,8 +72,8 @@ function App() {
             <div className="mt-auto">
               <Controls 
                 angle={angle}
-                onAngleChange={handleAngleChange}
-                onNextLevel={nextLevel}
+                onAngleChange={handleAngleChangeWithSound}
+                onNextLevel={handleNextLevel}
                 isCorrect={isCorrect}
                 score={score}
                 level={currentLevel + 1}
@@ -57,7 +86,7 @@ function App() {
               angle={angle}
               targetAngle={levels[currentLevel].targetAngle}
               isCorrect={isCorrect}
-              onDragMove={handleAngleChange}
+              onDragMove={handleAngleChangeWithSound}
             />
           </div>
         </div>
@@ -65,7 +94,10 @@ function App() {
 
       {isGameComplete && (
         <Celebration 
-          onFinish={() => setShowFinalScore(true)}
+          onFinish={() => {
+            soundManager.play('click');
+            setShowFinalScore(true);
+          }}
           score={score}
         />
       )}

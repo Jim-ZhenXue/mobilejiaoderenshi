@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     // 确保静态资源被复制到构建目录
-    assetsDir: '',
+    assetsDir: 'assets',
     // 复制静态文件到构建目录
     rollupOptions: {
       input: {
@@ -19,5 +19,7 @@ export default defineConfig({
     watch: {
       usePolling: true
     }
-  }
+  },
+  // 确保public目录中的文件可以正确被引用
+  publicDir: 'public'
 })
