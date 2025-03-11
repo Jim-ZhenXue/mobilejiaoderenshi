@@ -1,46 +1,40 @@
 type SoundType = 'click' | 'correct' | 'incorrect' | 'levelComplete' | 'gameComplete' | 'rotate';
 
 class SoundManager {
-  private sounds: Record<SoundType, HTMLAudioElement> = {} as Record<SoundType, HTMLAudioElement>;
+  private correctSound: HTMLAudioElement | null = null;
   private isMuted: boolean = false;
   private isInitialized: boolean = false;
   private userInteracted: boolean = false;
 
   constructor() {
-    // 在组件挂载后初始化声音
-    setTimeout(() => this.init(), 100);
+    this.init();
     this.setupUserInteractionListeners();
   }
 
   private init() {
     try {
       console.log('初始化音效系统...');
-      // 初始化所有声音
-      this.sounds = {
-        click: new Audio('./sounds/click.mp3'),
-        correct: new Audio('./sounds/correct.mp3'),
-        incorrect: new Audio('./sounds/incorrect.mp3'),
-        levelComplete: new Audio('./sounds/level-complete.mp3'),
-        gameComplete: new Audio('./sounds/game-complete.mp3'),
-        rotate: new Audio('./sounds/new_rotate.mp3')
-      };
-
-      // 预加载所有声音
-      Object.entries(this.sounds).forEach(([key, audio]) => {
-        audio.preload = 'auto'; // 设置预加载
-        audio.load();
-        console.log(`预加载音效: ${key}, 路径: ${audio.src}`);
-        
-        // 监听加载完成事件
-        audio.addEventListener('canplaythrough', () => {
-          console.log(`音效 ${key} 已加载完成并可以播放`);
-        });
-        
-        // 监听加载错误
-        audio.addEventListener('error', (e) => {
-          console.error(`音效 ${key} 加载失败:`, e);
-          console.error(`尝试加载的URL: ${audio.src}`);
-        });
+      // 使用绝对路径初始化正确音效
+      this.correctSound = new Audio('/sounds/correct.mp3');
+      this.correctSound.preload = 'auto';
+      this.correctSound.load();
+      console.log('预加载音效: correct, 路径:', this.correctSound.src);
+      
+      // 监听加载完成事件
+      this.correctSound.addEventListener('canplaythrough', () => {
+        console.log('音效 correct 已加载完成并可以播放');
+      });
+      
+      // 监听加载错误
+      this.correctSound.addEventListener('error', (e) => {
+        console.error('音效 correct 加载失败:', e);
+        console.error('尝试加载的URL:', this.correctSound?.src);
+        // 尝试备用路径
+        if (this.correctSound) {
+          this.correctSound.src = './sounds/correct.mp3';
+          this.correctSound.load();
+          console.log('尝试备用路径:', this.correctSound.src);
+        }
       });
 
       this.isInitialized = true;
@@ -56,15 +50,31 @@ class SoundManager {
       this.userInteracted = true;
       console.log('用户已交互，音频可以播放');
       
+      // 确保音效系统已初始化
+      if (!this.isInitialized) {
+        this.init();
+      }
+      
       // 尝试播放一个静音的音频，以解除浏览器的自动播放限制
       try {
-        const audio = new Audio();
-        audio.volume = 0;
-        audio.play().then(() => {
-          console.log('已解除浏览器自动播放限制');
-        }).catch(e => {
-          console.warn('无法解除浏览器自动播放限制:', e);
-        });
+        if (this.correctSound) {
+          // 直接使用correctSound进行预热
+          const volume = this.correctSound.volume;
+          this.correctSound.volume = 0;
+          this.correctSound.play().then(() => {
+            console.log('已解除浏览器自动播放限制');
+            this.correctSound!.pause();
+            this.correctSound!.currentTime = 0;
+            this.correctSound!.volume = volume; // 恢复原音量
+          }).catch(e => {
+            console.warn('无法解除浏览器自动播放限制:', e);
+            // 使用备用方法
+            const silentAudio = new Audio();
+            silentAudio.volume = 0;
+            silentAudio.src = '/sounds/correct.mp3';
+            silentAudio.play().catch(() => {});
+          });
+        }
       } catch (e) {
         console.warn('尝试解除自动播放限制时出错:', e);
       }
@@ -81,68 +91,76 @@ class SoundManager {
   }
 
   public play(type: SoundType) {
-    if (this.isMuted) {
-      console.log(`音效静音中，不播放: ${type}`);
+    // 如果不是正确音效，直接返回
+    if (type !== 'correct') {
       return;
     }
     
-    if (!this.isInitialized) {
+    if (this.isMuted) {
+      console.log('音效静音中，不播放: correct');
+      return;
+    }
+    
+    if (!this.isInitialized || !this.correctSound) {
       console.warn('音效系统未初始化，尝试初始化...');
       this.init();
-      setTimeout(() => this.play(type), 500); // 延迟重试播放
+      setTimeout(() => this.play(type), 100); // 减少延迟
       return;
     }
 
     try {
-      // 检查声音是否存在
-      const sound = this.sounds[type];
-      if (!sound) {
-        console.error(`找不到指定的音效: ${type}`);
-        // 如果找不到指定的音效，尝试重新创建
-        this.sounds[type] = new Audio(`./sounds/${type}.mp3`);
-        this.sounds[type].load();
-        return;
+      // 确保已经与用户交互
+      if (!this.userInteracted) {
+        console.warn('用户尚未与页面交互，尝试标记用户交互');
+        // 模拟用户交互
+        this.userInteracted = true;
       }
-
+      
       // 检查音频文件是否已加载
-      if (sound.readyState === 0) {
-        console.warn(`音效 ${type} 尚未加载完成，尝试加载...`);
-        sound.src = `./sounds/${type}.mp3`;
-        sound.load();
-        setTimeout(() => this.play(type), 500); // 延迟重试播放
+      if (this.correctSound.readyState < 2) { // HAVE_CURRENT_DATA = 2
+        console.warn('音效 correct 尚未加载完成，尝试加载...');
+        // 尝试不同的路径加载
+        if (this.correctSound.src.includes('./sounds/')) {
+          this.correctSound.src = '/sounds/correct.mp3';
+        } else {
+          this.correctSound.src = './sounds/correct.mp3';
+        }
+        this.correctSound.load();
+        setTimeout(() => this.play(type), 100);
         return;
       }
       
       // 重置音频
-      sound.pause();
-      sound.currentTime = 0;
+      this.correctSound.pause();
+      this.correctSound.currentTime = 0;
+      
+      // 确保音量是正常的
+      this.correctSound.volume = 1;
       
       // 显示音频信息
-      console.log(`尝试播放音效 ${type}, 路径: ${sound.src}, 状态: ${sound.readyState}`);
+      console.log('尝试播放音效 correct, 路径:', this.correctSound.src, '状态:', this.correctSound.readyState);
       
       // 播放声音
-      const playPromise = sound.play();
+      const playPromise = this.correctSound.play();
       
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          console.log(`成功播放音效: ${type}`);
+          console.log('成功播放音效: correct');
         }).catch(error => {
-          console.warn(`无法播放声音 ${type}:`, error);
+          console.warn('无法播放声音 correct:', error);
           
-          // 如果是因为用户尚未交互导致无法播放
-          if (!this.userInteracted) {
-            console.warn('用户尚未与页面交互，浏览器阻止了音频播放');
-            // 为了解决这个问题，我们可以在下一次用户交互时尝试播放
-            const playOnUserInteraction = () => {
-              this.play(type);
-              document.removeEventListener('click', playOnUserInteraction);
-            };
-            document.addEventListener('click', playOnUserInteraction, { once: true });
-          }
+          // 再次尝试播放，可能是浏览器暂时还没准备好
+          setTimeout(() => {
+            if (this.correctSound) {
+              this.correctSound.play().catch(e => {
+                console.error('二次尝试播放失败:', e);
+              });
+            }
+          }, 100);
         });
       }
     } catch (error) {
-      console.error(`播放音效 ${type} 时出错:`, error);
+      console.error('播放音效 correct 时出错:', error);
     }
   }
 
