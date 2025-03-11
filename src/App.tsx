@@ -3,7 +3,6 @@ import { Instructions } from './components/Instructions';
 import { Controls } from './components/Controls';
 import { Celebration } from './components/Celebration';
 import { FinalScore } from './components/FinalScore';
-import { SoundButton } from './components/SoundButton';
 import { levels } from './data/levels';
 import { useAngleGame } from './hooks/useAngleGame';
 import { useState, useEffect } from 'react';
@@ -55,7 +54,6 @@ function App() {
   return (
     <div className="min-h-screen bg-black p-5 flex items-center">
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
-        <SoundButton />
         <div className="flex justify-center gap-12 items-start translate-x-[25px]">
           <div className="w-[600px]">
             <h1 className="text-2xl font-bold text-center mb-8">
