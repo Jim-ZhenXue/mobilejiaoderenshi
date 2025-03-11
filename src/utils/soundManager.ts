@@ -22,7 +22,7 @@ class SoundManager {
         incorrect: new Audio('./sounds/incorrect.mp3'),
         levelComplete: new Audio('./sounds/level-complete.mp3'),
         gameComplete: new Audio('./sounds/game-complete.mp3'),
-        rotate: new Audio('./sounds/rotate.mp3')
+        rotate: new Audio('./sounds/new_rotate.mp3')
       };
 
       // 预加载所有声音
