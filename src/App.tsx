@@ -64,7 +64,6 @@ function App() {
         
         {/* 游戏主要内容区域 - 向左平移20个像素 */}
         <div className="flex justify-center gap-12 items-start -translate-x-[20px]">
-        <div className="flex justify-center gap-12 items-start -translate-y-[20px]">
           <div className="w-[600px] flex flex-col">
             <div className="mt-auto">
               <Controls 
@@ -78,7 +77,7 @@ function App() {
             </div>
           </div>
 
-          <div className="w-[600px] flex items-center justify-center">
+          <div className="w-[600px] flex items-center justify-center -translate-y-[10px]">
             <GameCanvas 
               angle={angle}
               totalRotation={totalRotation} // 传递累积旋转角度
