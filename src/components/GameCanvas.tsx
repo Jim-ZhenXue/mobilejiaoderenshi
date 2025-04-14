@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stage, Layer, Line, Circle, Group, Arc, Path, Shape } from 'react-konva';
+import { Stage, Layer, Line, Circle, Group, Shape } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { CANVAS_CONFIG } from '../constants/game';
 import Konva from 'konva';
