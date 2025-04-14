@@ -77,7 +77,7 @@ function App() {
             </div>
           </div>
 
-          <div className="w-[600px] flex items-center justify-center -translate-y-[10px]">
+          <div className="w-[600px] flex items-center justify-center -translate-y-[30px]">
             <GameCanvas 
               angle={angle}
               totalRotation={totalRotation} // 传递累积旋转角度
