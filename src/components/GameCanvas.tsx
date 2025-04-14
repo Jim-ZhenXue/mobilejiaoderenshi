@@ -78,44 +78,73 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     ctx.fill();
   };
 
-  // 绘制角度箭头的自定义函数
+  // 绘制角度箭头的自定义函数 - 使用渐开线
   const drawAngleArrow = (ctx: Konva.Context, _: Konva.Shape) => {
-    const arrowRadius = radius * 0.4; // 箭头弧的半径
-    const startAngle = (-90 * Math.PI) / 180; // 起始角度（12点钟方向）
-    const endAngle = ((totalRotation - 90) * Math.PI) / 180; // 使用累积旋转角度
-    
-    // 设置线条样式 - 使用更亮的颜色
-    ctx.strokeStyle = isCorrect ? "#4AE54A" : (totalRotation >= 0 ? "#5B8FF9" : "#FF6B6B"); // 更亮的颜色
-    ctx.lineWidth = 4; // 进一步增加线条宽度
+    // 设置线条样式
+    ctx.strokeStyle = isCorrect ? "#4AE54A" : (totalRotation >= 0 ? "#5B8FF9" : "#FF6B6B");
+    ctx.lineWidth = 4;
     ctx.beginPath();
     
-    // 绘制弧线
-    ctx.arc(
-      centerX, 
-      centerY, 
-      arrowRadius, 
-      startAngle, 
-      endAngle, 
-      totalRotation < 0 // 逆时针方向则为true
-    );
+    // 基础参数
+    const baseRadius = radius * 0.3; // 起始半径
+    const radiusGrowthRate = 0.08; // 显著增加半径增长率
+    
+    // 角度计算
+    const startAngle = -90 * (Math.PI / 180); // 12点钟方向
+    const rotationInRadians = totalRotation * (Math.PI / 180); // 将累积旋转角度转换为弧度
+    
+    // 计算绘制的结束角度
+    const endAngle = startAngle + rotationInRadians;
+    
+    // 分段绘制渐开线，增加分段数量使曲线更平滑
+    const segments = 200;
+    const angleStep = (endAngle - startAngle) / segments;
+    
+    // 计算起点
+    let currentAngle = startAngle;
+    let currentRadius = baseRadius;
+    let x = centerX + currentRadius * Math.cos(currentAngle);
+    let y = centerY + currentRadius * Math.sin(currentAngle);
+    ctx.moveTo(x, y);
+    
+    // 逐段绘制渐开线
+    for (let i = 1; i <= segments; i++) {
+      currentAngle = startAngle + i * angleStep;
+      
+      // 计算当前旋转的圈数，用于控制半径增长
+      const turns = Math.abs(currentAngle - startAngle) / (2 * Math.PI);
+      
+      // 半径随旋转圈数增长
+      currentRadius = baseRadius + (radius * radiusGrowthRate * turns);
+      
+      x = centerX + currentRadius * Math.cos(currentAngle);
+      y = centerY + currentRadius * Math.sin(currentAngle);
+      ctx.lineTo(x, y);
+    }
+    
+    // 绘制线条
+    ctx.stroke();
     
     // 计算箭头的终点
-    const endX = centerX + arrowRadius * Math.cos(endAngle);
-    const endY = centerY + arrowRadius * Math.sin(endAngle);
+    const endX = x;
+    const endY = y;
     
     // 计算箭头点
     const arrowSize = 10;
     
-    // 计算垂直于半径的方向（切线方向）
-    const tangentAngle = endAngle - Math.PI / 2;
-    
-    // 计算箭头的两个点
-    const arrowX1 = endX + arrowSize * Math.cos(tangentAngle - Math.PI / 6);
-    const arrowY1 = endY + arrowSize * Math.sin(tangentAngle - Math.PI / 6);
-    const arrowX2 = endX + arrowSize * Math.cos(tangentAngle + Math.PI / 6);
-    const arrowY2 = endY + arrowSize * Math.sin(tangentAngle + Math.PI / 6);
+    // 计算切线方向
+    // 切线与半径的夹角取决于渐开线的参数方程
+    // 这里我们计算切线角度为当前半径方向加上90度（或-90度，取决于旋转方向）
+    const radialAngle = Math.atan2(endY - centerY, endX - centerX);
+    const tangentAngle = radialAngle + (totalRotation >= 0 ? -Math.PI/2 : Math.PI/2);
     
     // 绘制箭头
+    ctx.beginPath();
+    const arrowX1 = endX + arrowSize * Math.cos(tangentAngle - Math.PI/6);
+    const arrowY1 = endY + arrowSize * Math.sin(tangentAngle - Math.PI/6);
+    const arrowX2 = endX + arrowSize * Math.cos(tangentAngle + Math.PI/6);
+    const arrowY2 = endY + arrowSize * Math.sin(tangentAngle + Math.PI/6);
+    
     ctx.moveTo(endX, endY);
     ctx.lineTo(arrowX1, arrowY1);
     ctx.moveTo(endX, endY);
