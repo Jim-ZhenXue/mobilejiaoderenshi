@@ -63,7 +63,7 @@ function App() {
         </div>
         
         {/* 游戏主要内容区域 - 向左平移20个像素 */}
-        <div className="flex justify-center gap-12 items-start -translate-x-[20px]">
+        <div className="flex justify-center gap-12 items-start -translate-x-[40px]">
           <div className="w-[600px] flex flex-col">
             <div className="mt-auto">
               <Controls 
