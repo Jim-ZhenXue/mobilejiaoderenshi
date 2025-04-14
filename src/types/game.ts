@@ -7,6 +7,7 @@ export interface LevelScore {
 export interface GameState {
   currentLevel: number;
   angle: number;
+  totalRotation: number; // 累积旋转角度
   isCorrect: boolean;
   totalScore: number;
   levelScores: LevelScore[];

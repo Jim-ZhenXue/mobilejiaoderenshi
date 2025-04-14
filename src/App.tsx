@@ -12,6 +12,7 @@ function App() {
   const {
     currentLevel,
     angle,
+    totalRotation, // 获取累积旋转角度
     isCorrect,
     score,
     isGameComplete,
@@ -82,6 +83,7 @@ function App() {
           <div className="w-[600px] flex items-center justify-center">
             <GameCanvas 
               angle={angle}
+              totalRotation={totalRotation} // 传递累积旋转角度
               targetAngle={levels[currentLevel].targetAngle}
               isCorrect={isCorrect}
               onDragMove={handleAngleChangeWithSound}

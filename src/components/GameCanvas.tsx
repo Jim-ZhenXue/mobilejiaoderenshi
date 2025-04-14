@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Stage, Layer, Line, Circle, Group, Arc, Path } from 'react-konva';
+import { Stage, Layer, Line, Circle, Group, Arc, Path, Shape } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { CANVAS_CONFIG } from '../constants/game';
+import Konva from 'konva';
 
 interface GameCanvasProps {
   angle: number;
   targetAngle: number;
   isCorrect: boolean;
   onDragMove: (angle: number) => void;
+  totalRotation?: number; // 累积旋转角度，可选参数
 }
 
 export const GameCanvas: React.FC<GameCanvasProps> = ({
@@ -15,6 +17,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   targetAngle,
   isCorrect,
   onDragMove,
+  totalRotation = 0, // 默认值为0
 }) => {
   const [hasStartedRotating, setHasStartedRotating] = useState(false);
   const { width, height, radius } = CANVAS_CONFIG;
@@ -40,35 +43,71 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     onDragMove(newAngle);
   };
 
-  // Calculate sector angles for the blue fill
-  const sectorAngles = (() => {
-    const start = -90; // Always start from top (12 o'clock)
-    const end = angle - 90; // Convert to Konva's coordinate system
-    return {
-      startAngle: start,
-      endAngle: end,
-      angle: ((end - start + 360) % 360) // Ensure positive angle
-    };
-  })();
-
-  // 生成角度箭头路径
-  const generateArrowPath = () => {
-    const arrowRadius = radius * 0.4; // 箭头弧的半径
-    const startAngle = -90 * (Math.PI / 180); // 起始角度（12点钟方向）
-    const endAngle = (angle - 90) * (Math.PI / 180); // 结束角度
+  // 计算用于绘制角度指示器的参数
+  const angleIndicatorParams = {
+    startAngle: -90, // 始终从顶部（12点钟方向）开始
+    endAngle: -90 + totalRotation, // 累积旋转角度
+    isClockwise: totalRotation >= 0 // 旋转方向
+  };
+  
+  // 绘制角度指示器的自定义函数
+  const drawAngleIndicator = (ctx: Konva.Context, _: Konva.Shape) => {
+    const { startAngle, endAngle } = angleIndicatorParams;
     
-    // 计算弧的起点和终点
-    const startX = centerX + arrowRadius * Math.cos(startAngle);
-    const startY = centerY + arrowRadius * Math.sin(startAngle);
+    ctx.beginPath();
+    
+    // 移动到圆心
+    ctx.moveTo(centerX, centerY);
+    
+    // 绘制扇形
+    ctx.arc(
+      centerX, 
+      centerY, 
+      radius, 
+      (startAngle * Math.PI) / 180, 
+      (endAngle * Math.PI) / 180, 
+      totalRotation < 0 // 逆时针方向则为true
+    );
+    
+    // 关闭路径
+    ctx.closePath();
+    
+    // 填充颜色
+    ctx.fillStyle = totalRotation >= 0 ? '#4169E1' : '#EF4444';
+    ctx.globalAlpha = 0.1;
+    ctx.fill();
+  };
+
+  // 绘制角度箭头的自定义函数
+  const drawAngleArrow = (ctx: Konva.Context, _: Konva.Shape) => {
+    const arrowRadius = radius * 0.4; // 箭头弧的半径
+    const startAngle = (-90 * Math.PI) / 180; // 起始角度（12点钟方向）
+    const endAngle = ((totalRotation - 90) * Math.PI) / 180; // 使用累积旋转角度
+    
+    // 设置线条样式
+    ctx.strokeStyle = isCorrect ? "#4CAF50" : (totalRotation >= 0 ? "#4169E1" : "#EF4444");
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    
+    // 绘制弧线
+    ctx.arc(
+      centerX, 
+      centerY, 
+      arrowRadius, 
+      startAngle, 
+      endAngle, 
+      totalRotation < 0 // 逆时针方向则为true
+    );
+    
+    // 计算箭头的终点
     const endX = centerX + arrowRadius * Math.cos(endAngle);
     const endY = centerY + arrowRadius * Math.sin(endAngle);
     
     // 计算箭头点
     const arrowSize = 10;
     
-    // 计算垂直于半径的方向
-    // 箭头方向应该垂直于半径，即切线方向
-    const tangentAngle = endAngle - Math.PI / 2; // 切线角度（垂直于半径）
+    // 计算垂直于半径的方向（切线方向）
+    const tangentAngle = endAngle - Math.PI / 2;
     
     // 计算箭头的两个点
     const arrowX1 = endX + arrowSize * Math.cos(tangentAngle - Math.PI / 6);
@@ -76,9 +115,14 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     const arrowX2 = endX + arrowSize * Math.cos(tangentAngle + Math.PI / 6);
     const arrowY2 = endY + arrowSize * Math.sin(tangentAngle + Math.PI / 6);
     
-    // 生成SVG路径
-    const largeArcFlag = sectorAngles.angle > 180 ? 1 : 0;
-    return `M ${startX} ${startY} A ${arrowRadius} ${arrowRadius} 0 ${largeArcFlag} 1 ${endX} ${endY} L ${arrowX1} ${arrowY1} M ${endX} ${endY} L ${arrowX2} ${arrowY2}`;
+    // 绘制箭头
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(arrowX1, arrowY1);
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(arrowX2, arrowY2);
+    
+    // 描边
+    ctx.stroke();
   };
 
   const ticks = Array.from({ length: 36 }, (_, i) => {
@@ -116,17 +160,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         {/* Tick marks */}
         {ticks}
 
-        {/* Blue sector - only show when rotating */}
-        {hasStartedRotating && (
-          <Arc
-            x={centerX}
-            y={centerY}
-            innerRadius={0}
-            outerRadius={radius}
-            angle={sectorAngles.angle}
-            rotation={sectorAngles.startAngle}
-            fill="#EF4444"
-            opacity={0.1}
+        {/* 旋转角度扇形 - 显示累积旋转角度 */}
+        {hasStartedRotating && totalRotation !== 0 && (
+          <Shape
+            sceneFunc={drawAngleIndicator}
+            x={0}
+            y={0}
           />
         )}
 
@@ -155,13 +194,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           strokeWidth={4}
         />
 
-        {/* Angle arrow */}
-        {hasStartedRotating && angle > 0 && (
-          <Path
-            data={generateArrowPath()}
-            stroke={isCorrect ? "#4CAF50" : "#EF4444"}
-            strokeWidth={2}
-            fill="transparent"
+        {/* 角度箭头 - 使用累积旋转角度 */}
+        {hasStartedRotating && totalRotation !== 0 && (
+          <Shape
+            sceneFunc={drawAngleArrow}
+            x={0}
+            y={0}
           />
         )}
 
