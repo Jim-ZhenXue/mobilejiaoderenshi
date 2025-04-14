@@ -53,16 +53,18 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-black p-5 flex items-center">
+    <div className="min-h-screen bg-black p-5 flex flex-col">
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
+        {/* 任务标签单独占一行且居中显示 */}
+        <div className="flex justify-center mb-8">
+          <div className="max-w-[800px]">
+            <Instructions level={levels[currentLevel]} />
+          </div>
+        </div>
+        
+        {/* 游戏主要内容区域 */}
         <div className="flex justify-center gap-12 items-start translate-x-[25px]">
-          <div className="w-[600px] flex flex-col justify-center h-full">
-            {/* 标题栏已移除 */}
-            
-            <div className="flex-grow flex items-center justify-center">
-              <Instructions level={levels[currentLevel]} />
-            </div>
-
+          <div className="w-[600px] flex flex-col">
             <div className="mt-auto">
               <Controls 
                 angle={angle}

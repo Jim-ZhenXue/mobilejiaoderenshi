@@ -7,9 +7,9 @@ export const GAME_CONFIG: GameConfig = {
 } as const;
 
 export const CANVAS_CONFIG: CanvasConfig = {
-  width: 360,
-  height: 360,
-  radius: 135,
+  width: 720,
+  height: 720,
+  radius: 270,
   tickCount: 36,
   mainTickInterval: 9,
   tickLengths: {
