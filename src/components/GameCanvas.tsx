@@ -72,9 +72,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     // 关闭路径
     ctx.closePath();
     
-    // 填充颜色
-    ctx.fillStyle = totalRotation >= 0 ? '#4169E1' : '#EF4444';
-    ctx.globalAlpha = 0.1;
+    // 填充颜色 - 使用更亮的颜色
+    ctx.fillStyle = totalRotation >= 0 ? '#5B8FF9' : '#FF6B6B'; // 更亮的蓝色和红色
+    ctx.globalAlpha = 0.45; // 显著增加不透明度
     ctx.fill();
   };
 
@@ -84,9 +84,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     const startAngle = (-90 * Math.PI) / 180; // 起始角度（12点钟方向）
     const endAngle = ((totalRotation - 90) * Math.PI) / 180; // 使用累积旋转角度
     
-    // 设置线条样式
-    ctx.strokeStyle = isCorrect ? "#4CAF50" : (totalRotation >= 0 ? "#4169E1" : "#EF4444");
-    ctx.lineWidth = 2;
+    // 设置线条样式 - 使用更亮的颜色
+    ctx.strokeStyle = isCorrect ? "#4AE54A" : (totalRotation >= 0 ? "#5B8FF9" : "#FF6B6B"); // 更亮的颜色
+    ctx.lineWidth = 4; // 进一步增加线条宽度
     ctx.beginPath();
     
     // 绘制弧线
@@ -190,7 +190,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             centerX + radius * Math.cos((angle - 90) * Math.PI / 180),
             centerY + radius * Math.sin((angle - 90) * Math.PI / 180)
           ]}
-          stroke={isCorrect ? "#4CAF50" : "#EF4444"}
+          stroke={isCorrect ? "#4AE54A" : "#FF6B6B"} // 更亮的颜色
           strokeWidth={4}
         />
 
