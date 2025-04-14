@@ -48,8 +48,11 @@ export const useAngleGame = () => {
       // 计算累积旋转的完整圈数
       const completeTurns = Math.floor(Math.abs(newTotalRotation) / 360);
       
-      // 只有当基本角度匹配且没有多转圈数时，才算正确答案
-      const isExactMatch = basicAngleMatched && completeTurns === 0;
+      // 检查旋转方向 - 只允许顺时针旋转（正值）
+      const isClockwiseRotation = newTotalRotation >= 0;
+      
+      // 只有当基本角度匹配、没有多转圈数、且是顺时针旋转时，才算正确答案
+      const isExactMatch = basicAngleMatched && completeTurns === 0 && isClockwiseRotation;
       
       if (isExactMatch && !currentLevelScore.hasScored) {
         const updatedLevelScores = updateLevelScore(
