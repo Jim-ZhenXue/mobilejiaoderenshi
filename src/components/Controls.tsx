@@ -55,14 +55,17 @@ export const Controls: React.FC<ControlsProps> = ({
       
       <ScoreDisplay score={score} level={level} />
 
-      {isCorrect && (
-        <button
-          className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold transition-colors animate-fast-pulse"
-          onClick={handleNextLevel}
-        >
-          下一关 →
-        </button>
-      )}
+      {/* 使用固定高度的容器，防止按钮出现时导致布局抖动 */}
+      <div className="h-[48px] flex items-center justify-center">
+        {isCorrect ? (
+          <button
+            className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold transition-colors animate-fast-pulse"
+            onClick={handleNextLevel}
+          >
+            下一关 →
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 };
