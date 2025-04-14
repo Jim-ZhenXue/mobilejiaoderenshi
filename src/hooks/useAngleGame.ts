@@ -36,14 +36,22 @@ export const useAngleGame = () => {
     const angleDiff = calculateAngleDifference(lastAngle, normalizedAngle);
     lastAngleRef.current = normalizedAngle;
     
-    const matched = checkAngleMatch(normalizedAngle, targetAngle, GAME_CONFIG.angleTolerance);
+    // 基本角度匹配检查
+    const basicAngleMatched = checkAngleMatch(normalizedAngle, targetAngle, GAME_CONFIG.angleTolerance);
     const currentLevelScore = gameState.levelScores[gameState.currentLevel];
 
     setGameState(prevState => {
       // 累计旋转角度
       const newTotalRotation = prevState.totalRotation + angleDiff;
       
-      if (matched && !currentLevelScore.hasScored) {
+      // 检查是否多转了圈
+      // 计算累积旋转的完整圈数
+      const completeTurns = Math.floor(Math.abs(newTotalRotation) / 360);
+      
+      // 只有当基本角度匹配且没有多转圈数时，才算正确答案
+      const isExactMatch = basicAngleMatched && completeTurns === 0;
+      
+      if (isExactMatch && !currentLevelScore.hasScored) {
         const updatedLevelScores = updateLevelScore(
           prevState.levelScores,
           prevState.currentLevel
@@ -63,7 +71,7 @@ export const useAngleGame = () => {
         ...prevState,
         angle: normalizedAngle,
         totalRotation: newTotalRotation,
-        isCorrect: matched
+        isCorrect: isExactMatch
       };
     });
   }, [gameState.currentLevel, gameState.levelScores]);
