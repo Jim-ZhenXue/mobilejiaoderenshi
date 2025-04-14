@@ -37,7 +37,20 @@ export const useAngleGame = () => {
     lastAngleRef.current = normalizedAngle;
     
     // 基本角度匹配检查
-    const basicAngleMatched = checkAngleMatch(normalizedAngle, targetAngle, GAME_CONFIG.angleTolerance);
+    // 对于360度（或者说是0度）的特殊情况进行处理
+    let basicAngleMatched = false;
+    if (targetAngle === 360 || targetAngle === 0) {
+      // 对于360度目标，允许正负5度的误差范围
+      const tolerance = GAME_CONFIG.angleTolerance;
+      basicAngleMatched = (
+        (normalizedAngle >= 360 - tolerance && normalizedAngle <= 360) || // 355-360度
+        (normalizedAngle >= 0 && normalizedAngle <= tolerance) // 0-5度
+      );
+    } else {
+      // 其他角度使用正常的匹配检查
+      basicAngleMatched = checkAngleMatch(normalizedAngle, targetAngle, GAME_CONFIG.angleTolerance);
+    }
+    
     const currentLevelScore = gameState.levelScores[gameState.currentLevel];
 
     setGameState(prevState => {
@@ -51,8 +64,23 @@ export const useAngleGame = () => {
       // 检查旋转方向 - 只允许顺时针旋转（正值）
       const isClockwiseRotation = newTotalRotation >= 0;
       
-      // 只有当基本角度匹配、没有多转圈数、且是顺时针旋转时，才算正确答案
-      const isExactMatch = basicAngleMatched && completeTurns === 0 && isClockwiseRotation;
+      // 判断是否为最后一关（目标角度为360度）
+      const isLastLevel = gameState.currentLevel === levels.length - 1;
+      
+      // 在最后一关中，如果用户稍微超过360度，也算作正确答案
+      let isExactMatch = false;
+      
+      if (isLastLevel && targetAngle === 360) {
+        // 对于最后一关，允许用户超过360度一点点
+        // 但仍然要求顺时针旋转
+        isExactMatch = basicAngleMatched && isClockwiseRotation && (
+          completeTurns === 0 || // 正好一圈
+          (completeTurns === 1 && newTotalRotation <= 370) // 允许超过一圈但不超过370度
+        );
+      } else {
+        // 其他关卡仍然使用原来的规则
+        isExactMatch = basicAngleMatched && completeTurns === 0 && isClockwiseRotation;
+      }
       
       if (isExactMatch && !currentLevelScore.hasScored) {
         const updatedLevelScores = updateLevelScore(
