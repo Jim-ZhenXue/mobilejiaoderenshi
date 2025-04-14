@@ -20,7 +20,7 @@ export const Instructions: React.FC<InstructionsProps> = ({ level }) => {
       <div className="relative">
         {/* 移除了标题，保留提示功能 */}
         {showTooltip && (
-          <div className="absolute top-0 left-0 mt-6 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10 w-64">
+          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2 bg-black/80 rounded-lg text-sm text-white">
             拖动红色圆点或使用按钮调整角度，使红线与灰线重合。当重合的时候，红线就会变成绿色
           </div>
         )}
