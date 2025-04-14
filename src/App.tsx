@@ -56,15 +56,10 @@ function App() {
     <div className="min-h-screen bg-black p-5 flex items-center">
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
         <div className="flex justify-center gap-12 items-start translate-x-[25px]">
-          <div className="w-[600px]">
-            <h1 className="text-2xl font-bold text-center mb-8">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 animate-gradient">
-                转转乐
-              </span>
-              <span className="text-purple-600">角度探险</span>
-            </h1>
+          <div className="w-[600px] flex flex-col justify-center h-full">
+            {/* 标题栏已移除 */}
             
-            <div className="mb-6">
+            <div className="flex-grow flex items-center justify-center">
               <Instructions level={levels[currentLevel]} />
             </div>
 
