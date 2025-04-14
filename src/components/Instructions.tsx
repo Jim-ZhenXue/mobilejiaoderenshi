@@ -25,10 +25,10 @@ export const Instructions: React.FC<InstructionsProps> = ({ level }) => {
           </div>
         )}
       </div>
-      <p className="text-yellow-400 text-3xl [&_.animate-gradient]:inline-block [&_.animate-gradient]:bg-gradient-to-r [&_.animate-gradient]:from-pink-500 [&_.animate-gradient]:via-purple-500 [&_.animate-gradient]:to-indigo-500 [&_.animate-gradient]:bg-clip-text [&_.animate-gradient]:text-transparent [&_.animate-gradient]:bg-[length:200%_auto] [&_.animate-gradient]:animate-gradient [&_.animate-gradient]:px-1 [&_.animate-gradient]:py-0.5">
+      <p className="text-yellow-400 text-2xl [&_.animate-gradient]:inline-block [&_.animate-gradient]:bg-gradient-to-r [&_.animate-gradient]:from-pink-500 [&_.animate-gradient]:via-purple-500 [&_.animate-gradient]:to-indigo-500 [&_.animate-gradient]:bg-clip-text [&_.animate-gradient]:text-transparent [&_.animate-gradient]:bg-[length:200%_auto] [&_.animate-gradient]:animate-gradient [&_.animate-gradient]:px-1 [&_.animate-gradient]:py-0.5">
         <span dangerouslySetInnerHTML={{ __html: instruction }}></span>
         <span 
-          className="inline-flex items-center cursor-pointer ml-8 scale-[3]"
+          className="inline-flex items-center cursor-pointer ml-6 scale-[2.4]"
           onClick={() => setShowTooltip(!showTooltip)}
         >
           <svg 
