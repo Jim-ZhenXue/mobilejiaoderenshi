@@ -71,11 +71,10 @@ export const useAngleGame = () => {
       let isExactMatch = false;
       
       if (isLastLevel && targetAngle === 360) {
-        // 对于最后一关，允许用户超过360度一点点
-        // 但仍然要求顺时针旋转
-        isExactMatch = basicAngleMatched && isClockwiseRotation && (
-          completeTurns === 0 || // 正好一圈
-          (completeTurns === 1 && newTotalRotation <= 370) // 允许超过一圈但不超过370度
+        // 对于360度（最后一关），必须完成一整圈的旋转
+        // 要求：总旋转角度在355-365度之间，且必须是顺时针旋转
+        isExactMatch = isClockwiseRotation && (
+          newTotalRotation >= 355 && newTotalRotation <= 365
         );
       } else {
         // 其他关卡仍然使用原来的规则
