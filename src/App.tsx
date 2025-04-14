@@ -57,7 +57,7 @@ function App() {
       <div className="w-full max-w-[1440px] mx-auto rounded-xl p-5">
         {/* 任务标签单独占一行且居中显示 */}
         <div className="flex justify-center mb-8">
-          <div className="max-w-[800px]">
+          <div className="max-w-[800px] mt-8">
             <Instructions level={levels[currentLevel]} />
           </div>
         </div>
